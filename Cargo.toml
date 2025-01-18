@@ -1,0 +1,22 @@
+[package]
+name = "ur-commit-mentor"
+version = "0.1.0"
+edition = "2021"
+description = "A CLI tool that analyzes git commits and provides AI-powered code review insights"
+authors = ["Özer Gökalpsezer <ozergokalpsezer@gmail.com>"]
+license = "MIT"
+repository = "https://github.com/ddoemonn/ur-commit-mentor"
+keywords = ["git", "ai", "code-review", "cli"]
+categories = ["development-tools", "command-line-utilities"]
+
+[dependencies]
+git2 = "0.20"
+chrono = "0.4"
+dialoguer = { version = "0.11", features = ["fuzzy-select"] }
+console = "0.15"
+reqwest = { version = "0.12.12", features = ["json"] }
+tokio = { version = "1.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+mdcat = "2.1"
+termimad = "0.31.1"
