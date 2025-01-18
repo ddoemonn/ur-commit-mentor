@@ -10,13 +10,16 @@ Ever written code, committed changes, and then wished you had a second pair of e
 - **AI-Powered Insights**: Get intelligent suggestions about code quality, best practices, and potential improvements
 - **Quick Feedback**: Understand the impact of your changes without waiting for human review
 
+## Installation 📦
+
+```bash
+# Install from crates.io
+cargo install ur-commit-mentor
+```
+
 ## Demo 🎥
 
-
-
 https://github.com/user-attachments/assets/5a76fed2-3924-4fd6-924d-a97055ee1b4e
-
-
 
 ## Features ✨
 
