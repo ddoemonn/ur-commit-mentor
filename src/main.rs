@@ -19,7 +19,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         std::process::exit(1);
     }
 
-    let repo_path = PathBuf::from(&args[1]).canonicalize()?;
+    let current_dir = env::current_dir()?;
+    let repo_path = current_dir.join(&args[1]);
+    let repo_path = repo_path.canonicalize().map_err(|e| {
+        eprintln!(
+            "{}: {}\nPath: {}\nTried resolving: {}",
+            style("Error resolving repository path").red(),
+            e,
+            args[1],
+            repo_path.display()
+        );
+        e
+    })?;
+
     let claude_api_key = &args[2];
 
     println!("{}", style("🔍 Analyzing Git Repository...").bold().cyan());
