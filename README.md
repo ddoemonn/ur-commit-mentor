@@ -12,7 +12,11 @@ Ever written code, committed changes, and then wished you had a second pair of e
 
 ## Demo 🎥
 
-[Demo video coming soon...]
+
+
+https://github.com/user-attachments/assets/5a76fed2-3924-4fd6-924d-a97055ee1b4e
+
+
 
 ## Features ✨
 
@@ -23,13 +27,6 @@ Ever written code, committed changes, and then wished you had a second pair of e
 - Visual commit statistics
 - Progress bars and visual metrics
 - Support for all git repositories
-
-## Installation 📦
-
-```bash
-# Install from crates.io
-cargo install ur-commit-mentor
-```
 
 ## Prerequisites 🔑
 
