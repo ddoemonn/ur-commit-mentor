@@ -122,26 +122,14 @@ impl CommitAnalysis {
         let term = Term::stdout();
         let _ = term.clear_screen();
 
+        // Modern header with version
         println!(
             "\n{}\n{}\n",
-            style("🔍 Commit History Analysis")
-                .bold()
-                .cyan()
-                .underlined(),
-            style("Select a commit to analyze its code changes").dim()
+            style(" 🔍 Commit History ").on_cyan().bold().black(),
+            style("Find and analyze your git commits").dim(),
         );
 
-        // Header
-        println!(
-            "{} {} {} {} {}",
-            style(format!("{:<4}", "ID")).bold(),
-            style(format!("{:<20}", "DATE & TIME")).bold(),
-            style(format!("{:<20}", "AUTHOR")).bold(),
-            style(format!("{:<15}", "CHANGES")).bold(),
-            style("COMMIT MESSAGE").bold()
-        );
-        println!("{}", style("─".repeat(100)).dim());
-
+        // Clean list of commits
         for (i, commit) in self.commits.iter().enumerate() {
             let date = DateTime::<Utc>::from_timestamp(commit.timestamp, 0)
                 .unwrap()
@@ -162,45 +150,27 @@ impl CommitAnalysis {
             });
 
             println!(
-                "{} {} {} {} {}",
-                style(format!("#{:<3}", i + 1)).green().bold(),
-                style(format!("{:<20}", date)).yellow(),
-                style(format!("{:<20}", &commit.author)).blue(),
-                style(format!("{:>15}", format!("+{} -{}", stats.0, stats.1))).cyan(),
-                style(&message_preview).white()
+                "{} {}\n   {} {} {} {}\n   {} {}\n",
+                style(format!("#{}", i + 1)).bold().green(),
+                style(&message_preview).white().bold(),
+                style("👤").dim(),
+                style(&commit.author).blue(),
+                style("•").dim(),
+                style(date).yellow(),
+                style("📊").dim(),
+                style(format!(
+                    "{} files  {}  {}",
+                    commit.code_changes.len(),
+                    style(format!("+{}", stats.0)).green(),
+                    style(format!("-{}", stats.1)).red(),
+                ))
             );
-
-            // Show file changes summary if any
-            let file_count = commit.code_changes.len();
-            if file_count > 0 {
-                let file_list: Vec<_> = commit
-                    .code_changes
-                    .iter()
-                    .take(3)
-                    .map(|f| f.file_path.split('/').last().unwrap_or(&f.file_path))
-                    .collect();
-
-                println!(
-                    "    {} {} {}",
-                    style("📁").dim(),
-                    style(format!("{} files:", file_count)).dim(),
-                    style(if file_count <= 3 {
-                        file_list.join(", ")
-                    } else {
-                        format!("{} and {} more...", file_list.join(", "), file_count - 3)
-                    })
-                    .dim()
-                );
-            }
-            println!();
         }
 
-        println!("\n{}", style("═".repeat(100)).cyan());
         println!(
-            "{}\n{}\n{}\n",
-            style("🔍 Interactive Commit Selection").bold().green(),
-            style("• Type to search by commit message, author, or date").dim(),
-            style("• Use ↑↓ arrows to navigate, Enter to select").dim()
+            "\n{}\n{}\n",
+            style("Type to search, ↑↓ to navigate").dim(),
+            style("Press Enter to analyze commit").dim()
         );
     }
 
@@ -252,62 +222,115 @@ impl CommitAnalysis {
         let term = Term::stdout();
         let _ = term.clear_screen();
 
-        // Display commit info
+        // Elegant header with commit info
+        println!(
+            "\n{}\n\n{}\n\n{}\n{}\n",
+            style(" 🔍 Commit Analysis ").on_cyan().bold().black(),
+            style(&format!("  {}", &commit.message))
+                .white()
+                .bold()
+                .on_black()
+                .underlined(),
+            style("Commit Details").bold().cyan(),
+            style("─".repeat(50)).dim(),
+        );
+
+        // Author and date in a clean line
+        println!(
+            "{}\n\n",
+            format!(
+                "{}  {}  {}  {}",
+                style("👤").dim(),
+                style(&commit.author).blue().bold(),
+                style("•").dim(),
+                style(
+                    DateTime::<Utc>::from_timestamp(commit.timestamp, 0)
+                        .unwrap()
+                        .format("%Y-%m-%d %H:%M")
+                )
+                .yellow()
+            ),
+        );
+
+        // Stats with better spacing
+        let (total_additions, total_deletions) =
+            commit.code_changes.iter().fold((0, 0), |acc, change| {
+                (
+                    acc.0 + change.additions.len(),
+                    acc.1 + change.deletions.len(),
+                )
+            });
+
+        println!(
+            "{}  {}  {}\n",
+            format!(
+                "📁 {}",
+                style(format!("{} files", commit.code_changes.len())).cyan()
+            ),
+            format!("✨ {}", style(format!("+{}", total_additions)).green()),
+            format!("📝 {}", style(format!("-{}", total_deletions)).red()),
+        );
+
+        // Language breakdown with percentage
+        let mut language_stats: HashMap<String, (usize, usize)> = HashMap::new();
+        for change in &commit.code_changes {
+            let entry = language_stats
+                .entry(change.language.clone())
+                .or_insert((0, 0));
+            entry.0 += change.additions.len();
+            entry.1 += change.deletions.len();
+        }
+
+        if !language_stats.is_empty() {
+            println!("\n{}\n", style("📊 Language Breakdown").bold());
+
+            for (lang, (adds, dels)) in language_stats {
+                let total = adds + dels;
+                let add_ratio = adds as f32 / total as f32;
+                let bars = 30;
+                let add_bars = (add_ratio * bars as f32) as usize;
+                let del_bars = bars - add_bars;
+                let percentage = (add_ratio * 100.0) as usize;
+
+                println!(
+                    "{}  {:<12} {}{}  {}",
+                    style("│").dim(),
+                    style(lang).bold(),
+                    style("▇".repeat(add_bars)).green().dim(),
+                    style("▇".repeat(del_bars)).red().dim(),
+                    style(format!("{}% additions", percentage)).dim(),
+                );
+            }
+            println!();
+        }
+
+        // AI Analysis section
         println!(
             "\n{}\n{}\n",
-            style("🔍 Analyzing Commit").bold().cyan(),
-            style(&commit.message).white()
+            style("🤖 AI Analysis").bold().magenta(),
+            style("─".repeat(50)).dim()
         );
 
-        println!("{}", style("═".repeat(80)).cyan());
-        println!(
-            "{} {}\n{} {}\n",
-            style("Author:").bold(),
-            style(&commit.author).blue(),
-            style("Date:").bold(),
-            style(
-                DateTime::<Utc>::from_timestamp(commit.timestamp, 0)
-                    .unwrap()
-                    .format("%Y-%m-%d %H:%M")
-            )
-            .yellow()
-        );
-
-        // Display language stats
-        let mut language_stats: HashMap<String, i32> = HashMap::new();
-        for change in &commit.code_changes {
-            *language_stats.entry(change.language.clone()).or_insert(0) += 1;
+        match self.get_ai_code_review(commit).await {
+            Ok(analysis) => {
+                let mut skin = MadSkin::default();
+                skin.set_headers_fg(crossterm::style::Color::Magenta);
+                skin.bold.set_fg(crossterm::style::Color::Yellow);
+                skin.italic.set_fg(crossterm::style::Color::Blue);
+                skin.code_block.set_fg(crossterm::style::Color::Green);
+                skin.inline_code.set_fg(crossterm::style::Color::Cyan);
+                skin.print_text(&analysis);
+            }
+            Err(_) => {
+                println!(
+                    "\n{}\n{}\n",
+                    style("⚠️  AI analysis unavailable").yellow(),
+                    style("Check your API key and connection").dim(),
+                );
+            }
         }
 
-        println!("{}", style("📊 Files Changed").bold().green());
-        for (lang, count) in language_stats {
-            println!(
-                "  {} {}",
-                style(format!("{:>12}", lang)).yellow(),
-                style(format!("{} files", count)).dim()
-            );
-        }
-        println!();
-
-        // Display AI Analysis with markdown rendering
-        println!("{}", style("🤖 AI Analysis").bold().magenta());
-        println!("{}", style("─".repeat(80)).magenta());
-
-        let analysis = self.get_ai_code_review(commit).await?;
-
-        // Setup terminal markdown
-        let mut skin = MadSkin::default();
-        skin.set_headers_fg(crossterm::style::Color::Cyan);
-        skin.bold.set_fg(crossterm::style::Color::Yellow);
-        skin.italic.set_fg(crossterm::style::Color::Magenta);
-        skin.code_block.set_fg(crossterm::style::Color::Green);
-        skin.inline_code.set_fg(crossterm::style::Color::Green);
-        skin.table.set_fg(crossterm::style::Color::Blue);
-
-        // Print the markdown
-        skin.print_text(&analysis);
-        println!();
-
+        println!("\n{}", style("─".repeat(50)).dim());
         Ok(())
     }
 
