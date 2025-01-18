@@ -1,6 +1,6 @@
 [package]
 name = "ur-commit-mentor"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 description = "A CLI tool that analyzes git commits and provides AI-powered code review insights"
 authors = ["Özer Gökalpsezer <ozergokalpsezer@gmail.com>"]

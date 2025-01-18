@@ -9,7 +9,15 @@ mod commit_analysis;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().collect();
 
-    if args.len() != 3 {
+    // Skip the first argument (program name) and any potential "--"
+    let filtered_args: Vec<String> = args
+        .iter()
+        .skip(1)
+        .filter(|arg| arg.as_str() != "--")
+        .cloned()
+        .collect();
+
+    if filtered_args.len() != 2 {
         eprintln!(
             "{}\n{}\n{}",
             style("Error: Missing required arguments").red(),
@@ -19,20 +27,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         std::process::exit(1);
     }
 
-    let current_dir = env::current_dir()?;
-    let repo_path = current_dir.join(&args[1]);
-    let repo_path = repo_path.canonicalize().map_err(|e| {
-        eprintln!(
-            "{}: {}\nPath: {}\nTried resolving: {}",
-            style("Error resolving repository path").red(),
-            e,
-            args[1],
-            repo_path.display()
-        );
-        e
-    })?;
-
-    let claude_api_key = &args[2];
+    let repo_path = &filtered_args[0];
+    let claude_api_key = &filtered_args[1];
 
     println!("{}", style("🔍 Analyzing Git Repository...").bold().cyan());
 
@@ -45,7 +41,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 "{}: {}\nPath: {}",
                 style("Error opening repository").red(),
                 e,
-                repo_path.display()
+                repo_path
             );
             return Err(e.into());
         }
