@@ -19,6 +19,8 @@ cargo install ur-commit-mentor
 
 ## Demo 🎥
 
+### NOTE: When you use a real Claude API key, you will receive AI insights in Markdown format in the terminal.
+
 https://github.com/user-attachments/assets/5a76fed2-3924-4fd6-924d-a97055ee1b4e
 
 ## Features ✨
