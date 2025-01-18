@@ -61,6 +61,10 @@ ur-commit-mentor ./awesome-project "your-api-key"
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
+## Support 
+<p><a href="https://www.buymeacoffee.com/ozergklp"> <img align="left" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="50" width="210" alt="ozergklp" /></a></p><br><br>
+
+
 ## License 📄
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
