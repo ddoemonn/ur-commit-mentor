@@ -1,7 +1,7 @@
 use commit_analysis::CommitAnalysis;
 use console::style;
 use git2::Repository;
-use std::{env, path::PathBuf};
+use std::env;
 
 mod commit_analysis;
 
