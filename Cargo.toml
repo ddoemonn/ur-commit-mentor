@@ -1,8 +1,8 @@
 [package]
 name = "ur-commit-mentor"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
-description = "A CLI tool that analyzes git commits and provides AI-powered code review insights"
+description = "A CLI tool that analyzes git commits and provides AI-powered code review insights (for now only works with Claude API)"
 authors = ["Özer Gökalpsezer <ozergokalpsezer@gmail.com>"]
 license = "MIT"
 repository = "https://github.com/ddoemonn/ur-commit-mentor"
