@@ -1,7 +1,7 @@
 use commit_analysis::CommitAnalysis;
 use console::style;
 use git2::Repository;
-use std::env;
+use std::{env, path::PathBuf};
 
 mod commit_analysis;
 
@@ -13,23 +13,28 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         eprintln!(
             "{}\n{}\n{}",
             style("Error: Missing required arguments").red(),
-            style("Usage: cargo run -- <repository_path> <claude_api_key>").yellow(),
-            style("Example: cargo run -- ./my-repo CLAUDE_API_KEY").dim()
+            style("Usage: ur-commit-mentor <repository_path> <claude_api_key>").yellow(),
+            style("Example: ur-commit-mentor ./my-repo CLAUDE_API_KEY").dim()
         );
         std::process::exit(1);
     }
 
-    let repo_path = &args[1];
+    let repo_path = PathBuf::from(&args[1]).canonicalize()?;
     let claude_api_key = &args[2];
 
     println!("{}", style("🔍 Analyzing Git Repository...").bold().cyan());
 
     let mut analysis = CommitAnalysis::new(claude_api_key.to_string());
 
-    let repo = match Repository::open(repo_path) {
+    let repo = match Repository::open(&repo_path) {
         Ok(repo) => repo,
         Err(e) => {
-            eprintln!("{}: {}", style("Error opening repository").red(), e);
+            eprintln!(
+                "{}: {}\nPath: {}",
+                style("Error opening repository").red(),
+                e,
+                repo_path.display()
+            );
             return Err(e.into());
         }
     };
