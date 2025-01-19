@@ -43,14 +43,14 @@ https://github.com/user-attachments/assets/5a76fed2-3924-4fd6-924d-a97055ee1b4e
 
 ```bash
 # Basic usage
-ur-commit-mentor <repository_path> <claude_api_key>
+ur-commit-mentor -- <repository_path> <claude_api_key>
 
 # Example
-ur-commit-mentor ./my-project "sk-ant-api03-xxxx..."
+ur-commit-mentor -- ./my-project "sk-ant-api03-xxxx..."
 
 # With relative path
 cd ~/projects
-ur-commit-mentor ./awesome-project "your-api-key"
+ur-commit-mentor -- ./awesome-project "your-api-key"
 ```
 
 ## Contributing 🤝
